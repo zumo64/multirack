@@ -1,0 +1,143 @@
+version: '2'
+services:
+  master:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    container_name: master
+    environment:
+      - cluster.name=cluster1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - node.data=false
+      - node.name=master
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1G
+    volumes:
+      - esmaster1:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+  data1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    container_name: data1
+    environment:
+      - cluster.name=cluster1
+      - node.attr.rack_id=rack_one
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=master"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - node.name=data1
+      - node.master=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1G
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+    networks:
+      - esnet
+  data2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    container_name: data2
+    environment:
+      - cluster.name=cluster1
+      - node.attr.rack_id=rack_one
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=master"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - node.name=data2
+      - node.master=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1G
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    ports:
+      - 9202:9200
+    networks:
+      - esnet
+  data3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    container_name: data3
+    environment:
+      - cluster.name=cluster1
+      - node.attr.rack_id=rack_two
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=master"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - node.name=data3
+      - node.master=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1G
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+    ports:
+      - 9203:9200
+    networks:
+      - esnet
+  data4:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    container_name: data4
+    environment:
+      - cluster.name=cluster1
+      - node.attr.rack_id=rack_two
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=master"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - node.name=data4
+      - node.master=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1G
+    volumes:
+      - esdata4:/usr/share/elasticsearch/data
+    ports:
+      - 9204:9200
+    networks:
+      - esnet
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.6.3
+    environment:
+      ELASTICSEARCH_URL: http://data1:9200
+      SERVER_HOST: kibana
+    volumes:
+      - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - esnet
+    ports:
+      - 5601:5601
+
+volumes:
+  esmaster1:
+    driver: local
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+  esdata3:
+    driver: local
+  esdata4:
+    driver: local
+networks:
+  esnet:
+    driver: bridge
+
+
+
+
